@@ -13,31 +13,32 @@ The system is decoupled into an ultra-fast critical path for request authorizati
 
 ```mermaid
 graph TD
-    subgraph "Customer Environment"
-        App[Customer Express App]
-        SDK[NPM SDK Middleware]
-        App --> SDK
+
+    subgraph Customer_Environment
+        App["Customer Express.js App"]
+        SDK["Your npm SDK Middleware"]
+        App -->|Incoming User Request| SDK
     end
 
-    subgraph "Cloud Infrastructure (SaaS)"
-        Gateway[Public API Gateway HTTP/REST]
-        gRPC[Internal Limiter Service Node.js]
-        Redis[(Redis Cluster)]
-        Kafka[Kafka Event Bus]
-        DB[(PostgreSQL)]
-        Worker[Analytics Worker Node.js]
-        
-        Gateway -->|1. gRPC CheckLimit| gRPC
-        gRPC -->|2. Atomic Lua Check| Redis
-        gRPC -.->|3. Async Event Log| Kafka
-        Kafka --> Worker --> DB
-        DB -.->|Periodic Rule Sync| gRPC
+    subgraph SaaS_Infrastructure
+        Gateway["Public API Gateway HTTP REST"]
+        Limiter["Internal Limiter Service Node.js"]
+        Redis[("Redis Engine")]
+        Kafka["Kafka Event Bus"]
+        DB[("PostgreSQL")]
+        Worker["Analytics Worker"]
+
+        Gateway -->|1. gRPC CheckLimit| Limiter
+        Limiter -->|2. Atomic Lua Check| Redis
+        Limiter -.->|3. Async Log| Kafka
+        Kafka --> Worker
+        Worker --> DB
     end
 
-    SDK -->|HTTPS POST| Gateway
+    SDK -->|HTTPS POST /v1/check| Gateway
     SDK -.->|429 Too Many Requests| App
-    SDK -.->|next() Allowed| App
-
+    SDK -.->|"next() Allowed"| App
+```
 
 # Engineering Trade-offs & System Design
 This project was built to solve the most common failures in distributed rate limiting:
