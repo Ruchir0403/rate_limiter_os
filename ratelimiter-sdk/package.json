@@ -1,0 +1,12 @@
+{
+  "name": "ryze_rate_limiter",
+  "version": "1.0.0",
+  "description": "The official Node.js SDK for the world's fastest distributed rate limiter.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Tests coming soon\" && exit 1"
+  },
+  "keywords": ["rate-limit", "express", "api-gateway", "security"],
+  "author": "Your Name",
+  "license": "MIT"
+}

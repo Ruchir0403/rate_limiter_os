@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package ratelimiter;
+
+service RateLimiter {
+  // The method the client will call
+  rpc CheckLimit (LimitRequest) returns (LimitResponse) {}
+}
+
+// What the client sends us
+message LimitRequest {
+  string key = 1;         // e.g., "user_42" or an IP address
+  string tier = 2;        // e.g., "FREE" or "PRO"
+}
+
+// What we send back
+message LimitResponse {
+  bool allowed = 1;       // true if they can proceed, false if rate limited
+  int32 remaining = 2;    // how many requests they have left in the window
+}
